@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Hangar Four4Three // Universal Media Facility [Port 443]</title>
+  <meta name="description" content="Hangar Four4Three: High-velocity universal media downloader. Direct stream downloads for YouTube, Instagram, X (Twitter), Facebook, Snapchat, and web videos with auto-platform tagging.">
+  
+  <!-- Modern Bold Display & Classic Serif/Sans Fonts, Pangolin & Iceberg -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Chakra+Petch:wght@500;600;700&family=Iceberg&family=JetBrains+Mono:wght@400;500;700&family=Pangolin&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css?v=20261003_11">
+
+  <!-- Immediate Preload Script: Eliminates any main page flash/reflection during mode transition -->
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var m = params.get('mode');
+        if (m === 'monster') {
+          document.documentElement.classList.add('preload-monster-intro');
+        } else if (m === 'calm') {
+          document.documentElement.classList.add('preload-calm-intro');
+        }
+      } catch(e) {}
+    })();
+  </script>
+</head>
+<body class="monster-mode">
+
+  <!-- DEFAULT MODE CHOOSER MODAL (CALM vs MONSTER) -->
+  <div id="mode-chooser-modal" class="mode-chooser-modal" role="dialog" aria-modal="true" aria-labelledby="chooser-title" style="display: none;">
+    <div class="chooser-backdrop" onclick="closeModeChooser()"></div>
+    <div class="chooser-card">
+      <div class="chooser-header">
+        <span class="chooser-tag">// SYSTEM INITIALIZATION</span>
+        <h2 id="chooser-title" class="chooser-title">SELECT EXTRACTION INTERFACE</h2>
+        <p class="chooser-sub">Configure your environment. Switch between classic serene focus or high-octane adrenaline at any time.</p>
+      </div>
+
+      <div class="chooser-grid">
+        <!-- Option 1: Calm Mode -->
+        <div class="chooser-option-card calm-card" tabindex="0" onclick="chooseUIMode('calm')">
+          <div class="opt-badge">SERENE SANCTUARY</div>
+          <div class="opt-icon-wrap calm-icon">
+            <div class="zen-circle"></div>
+            <span class="opt-emoji">🍃</span>
+          </div>
+          <h3 class="opt-title">CALM MODE</h3>
+          <div class="opt-subtitle">CLASSIC TYPOGRAPHY • ZERO DISTRACTION</div>
+          <p class="opt-desc">Classic editorial typography with serif headings, clean minimal cards, zero hacking noise, and smooth tranquil downloading.</p>
+          <div class="opt-action-btn btn-calm">
+            <span>ENTER CALM (5s INTRO) &rarr;</span>
+          </div>
+        </div>
+
+        <!-- Option 2: Monster Mode -->
+        <div class="chooser-option-card monster-card" tabindex="0" onclick="chooseUIMode('monster')">
+          <div class="opt-badge energy-badge">HIGH VOLTAGE</div>
+          <div class="opt-icon-wrap monster-icon">
+            <div class="energy-lightning"></div>
+            <span class="opt-emoji">⚡</span>
+          </div>
+          <h3 class="opt-title">MONSTER MODE</h3>
+          <div class="opt-subtitle">POWERED BY MONSTER OCTANE • EXTREME SPORTS</div>
+          <p class="opt-desc">Condensed aggressive cyber typography, 5s extreme sports storm intro (F1, Moto GP, Wingsuit, UFC), space rocket travel & live Hollywood hacking terminals.</p>
+          <div class="opt-action-btn btn-monster">
+            <span>UNLEASH MONSTER (5s INTRO) &rarr;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5-SECOND MONSTER MODE FULL-SCREEN INTRO ANIMATION -->
+  <div id="monster-intro-overlay" class="monster-intro-overlay" style="display: none;" aria-hidden="true">
+    <!-- Lightning & Thunder Storm Background Canvas -->
+    <canvas id="thunder-canvas" class="intro-thunder-canvas"></canvas>
+    <div id="lightning-flash-screen" class="lightning-flash-screen"></div>
+
+    <button type="button" class="intro-skip-btn" onclick="skipMonsterIntro()" title="Skip straight to app">
+      <span>SKIP [ESC] &gt;&gt;</span>
+    </button>
+
+    <!-- SURROUNDING EXTREME SPORTS (ART MODE: High-Octane Neon Action Silhouettes & Art) -->
+    <div class="extreme-sports-art-layer">
+      <!-- 1. Heavy Orbital Space Rocket Launch -->
+      <div class="sport-art-item item-rocket" title="Heavy Orbital Rocket">
+        <svg viewBox="0 0 140 140" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Rocket Body -->
+          <path d="M70 12 C78 28, 86 52, 84 84 L56 84 C54 52, 62 28, 70 12 Z" fill="#0c180e" stroke="#4FD050" stroke-width="2.5"/>
+          <path d="M70 12 L70 84" stroke="#84ff6b" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="70" cy="42" r="6" fill="#4FD050" stroke="#fff" stroke-width="1.5"/>
+          <!-- Boosters & Aerodynamic Fins -->
+          <path d="M56 68 L40 92 L54 88 Z" fill="#143618" stroke="#4FD050" stroke-width="2"/>
+          <path d="M84 68 L100 92 L86 88 Z" fill="#143618" stroke="#4FD050" stroke-width="2"/>
+          <path d="M50 78 L32 100 L48 94 Z" fill="#4FD050" opacity="0.8"/>
+          <path d="M90 78 L108 100 L92 94 Z" fill="#4FD050" opacity="0.8"/>
+          <!-- Thrust Plasma Flame & Exhaust Plume -->
+          <path d="M60 88 C55 110, 70 134, 70 134 C70 134, 85 110, 80 88 Z" fill="#4FD050" opacity="0.9"/>
+          <path d="M64 88 C60 104, 70 122, 70 122 C70 122, 80 104, 76 88 Z" fill="#bbf82e"/>
+          <path d="M67 88 L70 108 L73 88 Z" fill="#ffffff"/>
+          <!-- Ascent Speed Streaks -->
+          <line x1="28" y1="50" x2="28" y2="120" stroke="#4FD050" stroke-width="1.5" opacity="0.4" stroke-dasharray="8 6"/>
+          <line x1="112" y1="50" x2="112" y2="120" stroke="#4FD050" stroke-width="1.5" opacity="0.4" stroke-dasharray="8 6"/>
+        </svg>
+      </div>
+
+      <!-- 2. Wingsuit High-Velocity Proximity Glider -->
+      <div class="sport-art-item item-paraglide" title="Wingsuit Proximity Glider">
+        <svg viewBox="0 0 140 120" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Wingsuit Body & Wing Canvas -->
+          <path d="M70 20 L115 55 C100 70, 85 75, 70 70 C55 75, 40 70, 25 55 Z" fill="#0e2412" stroke="#4FD050" stroke-width="2.5"/>
+          <!-- Wingsuit Wing Membrane Ribs -->
+          <path d="M70 24 L28 56 M70 24 L112 56 M70 24 L45 68 M70 24 L95 68" stroke="#84ff6b" stroke-width="1.5" opacity="0.6"/>
+          <!-- Helmet & Goggles -->
+          <ellipse cx="70" cy="22" rx="7" ry="6" fill="#fff" stroke="#4FD050" stroke-width="2"/>
+          <ellipse cx="70" cy="22" rx="4" ry="2.5" fill="#4FD050"/>
+          <!-- Legs Tail Wing -->
+          <path d="M60 70 L54 100 L70 92 L86 100 L80 70 Z" fill="#143618" stroke="#4FD050" stroke-width="2"/>
+          <!-- Wind Vortices -->
+          <path d="M118 56 C130 62, 134 74, 126 82" stroke="#bbf82e" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+          <path d="M22 56 C10 62, 6 74, 14 82" stroke="#bbf82e" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+      </div>
+
+      <!-- 3. Formula 1 Apex Hypercar -->
+      <div class="sport-art-item item-f1" title="Formula 1 Apex Car">
+        <svg viewBox="0 0 150 80" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Aerodynamic Chassis Silhouette -->
+          <path d="M12 52 L36 52 L62 40 L108 40 L128 48 L142 48 L142 54 L12 54 Z" fill="#08180a" stroke="#4FD050" stroke-width="2.5"/>
+          <path d="M62 40 L80 26 L102 38 Z" fill="#143818" stroke="#4FD050" stroke-width="1.8"/>
+          <!-- Rear Wing Endplate -->
+          <path d="M124 24 L144 24 L138 48 Z" fill="#4FD050"/>
+          <line x1="126" y1="26" x2="144" y2="26" stroke="#fff" stroke-width="3"/>
+          <line x1="128" y1="32" x2="142" y2="32" stroke="#fff" stroke-width="2"/>
+          <!-- Wide Slick Tires -->
+          <rect x="28" y="42" width="22" height="24" rx="4" fill="#040804" stroke="#4FD050" stroke-width="2.5"/>
+          <rect x="108" y="40" width="24" height="26" rx="4" fill="#040804" stroke="#4FD050" stroke-width="2.5"/>
+          <!-- Halo & Helmet -->
+          <circle cx="86" cy="32" r="5.5" fill="#eab308" stroke="#fff" stroke-width="1.2"/>
+          <!-- Neon Speed & Ground Effect Glow -->
+          <line x1="2" y1="68" x2="148" y2="68" stroke="#4FD050" stroke-width="2" opacity="0.75" stroke-dasharray="12 6"/>
+        </svg>
+      </div>
+
+      <!-- 4. MotoGP 65-Degree Knee-Down Superbike -->
+      <div class="sport-art-item item-motogp" title="MotoGP Superbike">
+        <svg viewBox="0 0 140 100" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Racing Wheels (Extreme Lean Angle) -->
+          <ellipse cx="32" cy="68" rx="16" ry="14" fill="#050a06" stroke="#4FD050" stroke-width="3"/>
+          <ellipse cx="108" cy="68" rx="16" ry="14" fill="#050a06" stroke="#4FD050" stroke-width="3"/>
+          <!-- Bike Fairing & Aerodynamic Winglets -->
+          <path d="M32 68 L60 46 L94 46 L108 68 L74 62 Z" fill="#0d2410" stroke="#4FD050" stroke-width="2.5"/>
+          <path d="M66 42 L82 34 L92 46 Z" fill="#4FD050"/>
+          <!-- Rider in Knee-Down Drag Position -->
+          <circle cx="76" cy="24" r="8" fill="#fff" stroke="#4FD050" stroke-width="2.5"/>
+          <path d="M72 32 L56 48 L80 48 L94 40 Z" fill="#1b461f" stroke="#4FD050" stroke-width="2"/>
+          <!-- Knee Puck Spark on Tarmac -->
+          <path d="M58 48 L46 64" stroke="#eab308" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="46" cy="64" r="3.5" fill="#fef08a"/>
+        </svg>
+      </div>
+
+      <!-- 5. UFC Octagon Combat Strike -->
+      <div class="sport-art-item item-ufc" title="UFC Combat Strike">
+        <svg viewBox="0 0 120 120" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Fighter Silhouette in Dynamic High Roundhouse Kick -->
+          <circle cx="40" cy="28" r="8" fill="#4FD050" stroke="#fff" stroke-width="1.5"/>
+          <!-- Torso & Guarding Arm -->
+          <path d="M40 36 L52 60 L44 76" stroke="#4FD050" stroke-width="5" stroke-linecap="round"/>
+          <path d="M40 40 L26 50 L36 58" stroke="#4FD050" stroke-width="4" stroke-linecap="round"/>
+          <!-- Flying Lead Kick -->
+          <path d="M52 60 L74 46 L102 34" stroke="#4FD050" stroke-width="5" stroke-linecap="round"/>
+          <!-- Plant Foot -->
+          <path d="M44 76 L42 102" stroke="#4FD050" stroke-width="5" stroke-linecap="round"/>
+          <!-- High Energy Kinetic Impact Blast -->
+          <path d="M102 34 L114 26 M102 34 L116 38 M102 34 L108 48" stroke="#bbf82e" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="102" cy="34" r="5" fill="#fef08a"/>
+        </svg>
+      </div>
+
+      <!-- 6. BMX Vertical Mega-Air Stunt -->
+      <div class="sport-art-item item-bmx" title="BMX Mega-Air">
+        <svg viewBox="0 0 130 110" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Spoke Wheels -->
+          <circle cx="34" cy="72" r="15" fill="#060c07" stroke="#4FD050" stroke-width="2.5"/>
+          <circle cx="96" cy="72" r="15" fill="#060c07" stroke="#4FD050" stroke-width="2.5"/>
+          <!-- Lightweight Frame -->
+          <path d="M34 72 L58 72 L78 52 L96 72 M58 72 L54 52 L78 52 M54 52 L48 40" stroke="#4FD050" stroke-width="3" stroke-linecap="round"/>
+          <!-- Inverted Rider in Tailwhip Grab -->
+          <circle cx="68" cy="24" r="7.5" fill="#fff" stroke="#4FD050" stroke-width="2"/>
+          <path d="M68 31 L62 52 L82 46" stroke="#4FD050" stroke-width="4" stroke-linecap="round"/>
+          <path d="M68 34 L88 38" stroke="#bbf82e" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <!-- 7. Big Wave Monster Surfer -->
+      <div class="sport-art-item item-surf" title="Monster Wave Surfer">
+        <svg viewBox="0 0 130 110" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Towering Giant Wave Lip -->
+          <path d="M12 96 C36 96, 52 42, 98 28 C78 34, 62 60, 36 84 Z" fill="#0a2e16" stroke="#4FD050" stroke-width="2.5"/>
+          <path d="M98 28 C92 34, 88 44, 94 48 C100 52, 108 42, 98 28 Z" fill="#bbf82e"/>
+          <!-- Surfer carving on steep wave wall -->
+          <path d="M42 86 L78 64" stroke="#eab308" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="60" cy="50" r="6" fill="#fff" stroke="#4FD050" stroke-width="2"/>
+          <path d="M60 56 L55 74 L68 70" stroke="#4FD050" stroke-width="4" stroke-linecap="round"/>
+          <!-- Water Spray Trajectory -->
+          <path d="M38 88 C24 82, 18 72, 14 62" stroke="#84ff6b" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        </svg>
+      </div>
+
+      <!-- 8. Backcountry Freestyle Mountain Snowboarder -->
+      <div class="sport-art-item item-snowboard" title="Snowboard Cliff Launch">
+        <svg viewBox="0 0 130 110" class="sport-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Angled Snowboard Deck -->
+          <path d="M22 84 L96 36" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+          <!-- Rider in Airborne Method Grab -->
+          <circle cx="58" cy="38" r="7" fill="#fff" stroke="#4FD050" stroke-width="2"/>
+          <path d="M58 45 L50 64 L72 54" stroke="#4FD050" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M58 48 L42 70" stroke="#bbf82e" stroke-width="3" stroke-linecap="round"/>
+          <!-- Snow Spray Particles -->
+          <circle cx="20" cy="88" r="2.5" fill="#fff"/>
+          <circle cx="14" cy="94" r="2" fill="#38bdf8"/>
+          <circle cx="28" cy="98" r="1.5" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Center Stage: EXACT LANDING PAGE MONSTER ENERGY LOGO -->
+    <div class="monster-intro-center-stage">
+      <div class="monster-logo-halo-ring"></div>
+      <div class="monster-logo-halo-ring r2"></div>
+      <img src="/monster_energy.png" alt="Monster Energy" class="monster-intro-core-logo">
+      
+      <!-- 5-Second Voltage Progress Bar -->
+      <div class="monster-intro-timer-bar">
+        <div class="monster-timer-labels">
+          <span class="timer-tag">// UNLEASHING MONSTER ENERGY</span>
+          <span id="monster-intro-countdown" class="timer-countdown">5.0s</span>
+        </div>
+        <div class="monster-timer-track">
+          <div id="monster-intro-bar-fill" class="monster-timer-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5-SECOND CALM MODE FULL-SCREEN INTRO ANIMATION (FALLING LEAVES) -->
+  <div id="calm-intro-overlay" class="calm-intro-overlay" style="display: none;" aria-hidden="true">
+    <!-- Dynamic Falling Leaves Canvas -->
+    <canvas id="leaves-canvas" class="intro-leaves-canvas"></canvas>
+
+    <button type="button" class="intro-skip-btn calm-skip" onclick="skipCalmIntro()" title="Skip straight to app">
+      <span>SKIP [ESC] &gt;&gt;</span>
+    </button>
+
+    <div class="calm-zen-content">
+      <div class="zen-ripple-orb">
+        <div class="zen-wave w1"></div>
+        <div class="zen-wave w2"></div>
+        <div class="zen-wave w3"></div>
+        <svg viewBox="0 0 100 100" class="calm-peace-intro-svg" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="42" stroke="#a0d4ff" stroke-width="4.5"/>
+          <line x1="50" y1="8" x2="50" y2="92" stroke="#a0d4ff" stroke-width="4.5" stroke-linecap="round"/>
+          <line x1="50" y1="50" x2="20" y2="80" stroke="#a0d4ff" stroke-width="4.5" stroke-linecap="round"/>
+          <line x1="50" y1="50" x2="80" y2="80" stroke="#a0d4ff" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <h2 class="calm-zen-heading">ENTERING CALM SANCTUARY</h2>
+      <p class="calm-zen-sub">Tranquil &middot; Serene &middot; Zero Distraction</p>
+
+      <!-- 5-Second Calm Progress Bar -->
+      <div class="calm-timer-bar">
+        <div id="calm-intro-bar-fill" class="calm-bar-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme Change Thunderstorm Canvas & Flash Screen -->
+  <canvas id="theme-storm-canvas" class="theme-storm-canvas"></canvas>
+  <div id="theme-storm-flash" class="theme-storm-flash"></div>
+
+  <!-- Power Surge / Glitch Wipe Overlay (Monster Mode theme switch) -->
+  <div id="power-surge-overlay" class="power-surge-overlay" aria-hidden="true"></div>
+
+  <!-- Noise Grain Texture Overlay -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- Custom Cursor Reticle (Monster Mode Only) -->
+  <div id="custom-cursor-dot" class="custom-cursor-dot" aria-hidden="true"></div>
+  <div id="custom-cursor-reticle" class="custom-cursor-reticle" aria-hidden="true"></div>
+
+  <div class="app-container">
+    
+    <!-- Top HUD Navigation Bar -->
+    <header class="site-header">
+      <div class="header-inner">
+        
+        <!-- Left: Brand & Identity (Click redirects to Landing Page) -->
+        <a href="/" class="brand-zone" tabindex="0" aria-haspopup="true" aria-label="Hangar Four4Three - Return to Landing Page">
+          <div class="brand-icon-box" aria-hidden="true">
+            <svg viewBox="0 0 28 28" width="22" height="22" fill="none">
+              <polygon points="14,2 26,8 26,20 14,26 2,20 2,8" stroke="var(--accent)" stroke-width="2" fill="none"/>
+              <path d="M10 14l3 3L18 10" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title glitch-hover" data-text="HANGAR FOUR4THREE">
+              <span class="brand-name-text">HANGAR FOUR4THREE</span>
+              <span class="info-hover-badge" title="Hover for facility dossier">ⓘ</span>
+            </div>
+            <div class="brand-version">CLASSIFIED FACILITY // PORT: 443</div>
+
+            <!-- Hover Dossier Popover -->
+            <div class="brand-lore-popover" role="tooltip" onclick="event.stopPropagation()">
+              <div class="popover-arrow" aria-hidden="true"></div>
+              <div class="popover-header">
+                <span class="popover-dossier-tag">🛸 FACILITY DOSSIER // DECLASSIFIED</span>
+                <span class="popover-status-dot"></span>
+              </div>
+              <div class="popover-content">
+                <div class="popover-entry">
+                  <div class="popover-label">
+                    <span class="entry-emoji">🛸</span>
+                    <strong class="entry-title">Hangar:</strong>
+                  </div>
+                  <p class="entry-desc">
+                    Where classified things get stored. Rumor says aliens live in Hangar 18. We only keep your downloads. <em>Probably.</em> 👽
+                  </p>
+                </div>
+                <div class="popover-divider"></div>
+                <div class="popover-entry">
+                  <div class="popover-label">
+                    <span class="entry-emoji">🔒</span>
+                    <strong class="entry-title">Four4Three (Port 443):</strong>
+                  </div>
+                  <p class="entry-desc">
+                    The universal standard HTTPS port for secure, unbreakable encrypted transmission. Where data stealth meets raw download velocity. ⚡
+                  </p>
+                </div>
+              </div>
+              <div class="popover-footer">
+                <span>SECURITY CLEARANCE: LEVEL 5</span>
+                <span>STATUS: ACTIVE 443/TCP</span>
+              </div>
+            </div>
+          </div>
+        </a>
+
+        <!-- Center: Calm / Monster Mode Toggle Slider -->
+        <div class="header-mode-zone">
+          <div id="mode-toggle-slider" class="mode-slider" role="switch" aria-checked="true" aria-label="Toggle UI Style: Calm or Monster" tabindex="0" onclick="toggleUIMode()">
+            <span class="slider-option calm" id="label-calm" onclick="event.stopPropagation(); toggleUIMode('calm')">CALM</span>
+            <span class="slider-option monster active" id="label-monster" onclick="event.stopPropagation(); toggleUIMode('monster')">MONSTER</span>
+            <div class="slider-thumb" id="slider-thumb" onclick="event.stopPropagation(); toggleUIMode()"></div>
+          </div>
+        </div>
+
+        <!-- Right Corner: Theme Selector Buttons -->
+        <div class="header-chips">
+          <div class="hud-chip theme-selector-chip">
+            <span class="chip-label">THEME:</span>
+            <button type="button" class="theme-dot-btn theme-purple active" id="btn-theme-default" onclick="selectTheme('default')" title="Default Theme: Light Purple + Black"></button>
+            <button type="button" class="theme-dot-btn theme-green" id="btn-theme-audio" onclick="selectTheme('audio')" title="Audio Theme: Muted Neon Green + Black"></button>
+            <button type="button" class="theme-dot-btn theme-yellow" id="btn-theme-video" onclick="selectTheme('video')" title="Video Theme: Muted Neon Yellow + Black"></button>
+          </div>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- Mission Hero Section -->
+    <section class="mission-hero">
+      <div class="hero-tag">UNIVERSAL PROTOCOL // ARMED</div>
+      <h1 class="hero-heading glitch-hover" data-text="UNIVERSAL MEDIA EXTRACTION">UNIVERSAL MEDIA EXTRACTION</h1>
+      <p class="hero-subtext">
+        Direct multi-platform stream extraction engine. Download media from <strong>YouTube, Instagram, X (Twitter), Facebook, Snapchat</strong>, and web sources in high-bitrate <strong>MP3 Audio</strong> or crisp <strong>MP4 Video</strong> with automated platform separation.
+      </p>
+    </section>
+
+    <!-- Main Asymmetric Workspace Layout -->
+    <main class="main-grid">
+      
+      <!-- LEFT COLUMN: Form Controls & Format Selection -->
+      <section class="panel-card form-panel">
+        <div class="panel-bracket top-left"></div>
+        <div class="panel-bracket top-right"></div>
+        <div class="panel-bracket bottom-left"></div>
+        <div class="panel-bracket bottom-right"></div>
+
+        <form id="download-form" class="downloader-form" onsubmit="return false;">
+          
+          <!-- URL Input Group -->
+          <div class="form-group">
+            <div class="field-header">
+              <label for="url-input" class="field-label">
+                <span class="accent-marker">//</span>
+                <span>TARGET STREAM URLS</span>
+                <span class="field-meta">[BATCH SUPPORTED &bull; 1 PER LINE]</span>
+              </label>
+              <span id="url-count-badge" class="badge-chip">0 URLs detected</span>
+            </div>
+
+            <div class="textarea-box">
+              <textarea
+                id="url-input"
+                name="urls"
+                rows="4"
+                placeholder="Paste media links here (YouTube, Instagram, X, Facebook, Snapchat)...&#10;YouTube: https://youtube.com/watch?v=...&#10;Instagram: https://instagram.com/reel/...&#10;X / Twitter: https://x.com/.../status/...&#10;Facebook: https://facebook.com/watch/?v=...&#10;Snapchat: https://snapchat.com/spotlight/..."
+                aria-label="Media URLs"
+                spellcheck="false"
+              ></textarea>
+            </div>
+
+            <!-- Real-Time Live Link Analyzer Bar -->
+            <div id="platform-analyzer-bar" class="platform-analyzer-bar" aria-live="polite">
+              <div class="analyzer-header">
+                <span class="analyzer-radar-icon"></span>
+                <span class="analyzer-title">DETECTED PLATFORMS:</span>
+              </div>
+              <div id="analyzer-chips-list" class="analyzer-chips-list">
+                <span class="analyzer-placeholder">Paste any YouTube, Instagram, X/Twitter, Facebook, or Snapchat link</span>
+              </div>
+            </div>
+
+            <!-- Input Quick Action Buttons -->
+            <div class="field-actions">
+              <button type="button" id="paste-btn" class="slash-btn btn-sm" title="Paste from clipboard">
+                <span class="btn-text">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                  PASTE CLIPBOARD
+                </span>
+              </button>
+              <button type="button" id="sample-btn" class="slash-btn btn-sm" title="Load sample YouTube URLs">
+                <span class="btn-text">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  LOAD SAMPLES
+                </span>
+              </button>
+              <button type="button" id="clear-input-btn" class="slash-btn btn-sm btn-ghost" title="Clear URL input">
+                <span class="btn-text">CLEAR</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Format Selector: Two Large Selectable Cards -->
+          <div class="form-group">
+            <div class="field-header">
+              <span class="field-label">
+                <span class="accent-marker">//</span>
+                <span>OUTPUT FORMAT SELECTOR</span>
+              </span>
+              <span class="theme-hint-text" id="format-hint-text">SELECT FORMAT TO ARM STREAM</span>
+            </div>
+
+            <div class="format-grid" role="radiogroup" aria-label="Output Format Selection">
+              
+              <!-- MP3 Audio Card (Sets data-theme="audio" on <html>) -->
+              <div class="format-card" id="format-mp3-label" data-format="mp3" tabindex="0" role="radio" aria-checked="false" onclick="selectFormat('mp3')">
+                <input type="radio" name="format" value="mp3" class="hidden-radio">
+                <div class="format-card-content">
+                  <div class="format-card-top">
+                    <span class="format-tag-badge">FORMAT // 01</span>
+                    <span class="armed-indicator"><span class="armed-dot"></span> <span class="armed-text">SELECT</span></span>
+                  </div>
+                  <div class="format-main-title">MP3 AUDIO</div>
+                  <div class="format-spec-line">LOSSLESS BITRATE &bull; UP TO 320 KBPS</div>
+                  <div class="format-desc-text">Automatic studio normalization, ID3 artist & title tagging, maximum fidelity audio.</div>
+                </div>
+              </div>
+
+              <!-- MP4 Video Card (Sets data-theme="video" on <html>) -->
+              <div class="format-card" id="format-mp4-label" data-format="mp4" tabindex="0" role="radio" aria-checked="false" onclick="selectFormat('mp4')">
+                <input type="radio" name="format" value="mp4" class="hidden-radio">
+                <div class="format-card-content">
+                  <div class="format-card-top">
+                    <span class="format-tag-badge">FORMAT // 02</span>
+                    <span class="armed-indicator"><span class="armed-dot"></span> <span class="armed-text">SELECT</span></span>
+                  </div>
+                  <div class="format-main-title">MP4 VIDEO</div>
+                  <div class="format-spec-line">CRISP RESOLUTION &bull; AUDIO MUXED</div>
+                  <div class="format-desc-text">Direct high-speed stream muxing with locked custom resolution selection up to Full HD.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Audio Mode Banner (Visible when MP3 is selected) -->
+          <div id="audio-quality-info" class="format-banner" style="display: none;">
+            <div class="banner-marker">!</div>
+            <div class="banner-text">
+              <strong>AUDIO MODE ACTIVE:</strong> Extracts the highest quality audio stream directly from YouTube container and renders pristine 320kbps MP3 audio with preserved artist metadata.
+            </div>
+          </div>
+
+          <!-- Video Quality Selector (Visible when MP4 is selected) -->
+          <div class="form-group" id="video-quality-group" style="display: none;">
+            <div class="field-header">
+              <label class="field-label" for="default-quality-select">
+                <span class="accent-marker">//</span>
+                <span>VIDEO RESOLUTION MATRIX</span>
+              </label>
+
+              <!-- Dropdown button next to VIDEO RESOLUTION MATRIX to select default MP4 quality -->
+              <div class="default-quality-dropdown-wrap">
+                <span class="dropdown-tag-label">DEFAULT:</span>
+                <select id="default-quality-select" class="cyber-select" title="Select permanent default MP4 video quality" onchange="saveDefaultVideoQuality(this.value, true)">
+                  <option value="best">Auto Best (1080p+)</option>
+                  <option value="1080">1080p Full HD</option>
+                  <option value="720" selected>720p HD</option>
+                  <option value="480">480p SD</option>
+                  <option value="360">360p Data Saver</option>
+                  <option value="240">240p Low</option>
+                  <option value="144">144p Min</option>
+                </select>
+                <span class="badge-chip quality-badge" id="quality-preview-badge">720p HD</span>
+              </div>
+            </div>
+
+            <div class="quality-grid" role="radiogroup" aria-label="Video Quality Selection">
+              
+              <div class="quality-pill" data-quality="best" title="Auto Best: Highest resolution available (1080p, 1440p, 4K)">
+                <input type="radio" name="video_quality" value="best" class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">Auto Best</span>
+                  <span class="q-label">1080p+</span>
+                  <span class="q-default-tag" style="display:none;">★ Default</span>
+                </div>
+              </div>
+
+              <div class="quality-pill" data-quality="1080" title="Full HD (1920x1080)">
+                <input type="radio" name="video_quality" value="1080" class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">1080p</span>
+                  <span class="q-label">Full HD</span>
+                  <span class="q-default-tag" style="display:none;">★ Default</span>
+                </div>
+              </div>
+
+              <div class="quality-pill active" data-quality="720" title="High Definition (1280x720) - Fast & Recommended">
+                <input type="radio" name="video_quality" value="720" checked class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">720p</span>
+                  <span class="q-label">HD</span>
+                  <span class="q-default-tag">★ Default</span>
+                </div>
+              </div>
+
+              <div class="quality-pill" data-quality="480" title="Standard Definition (854x480)">
+                <input type="radio" name="video_quality" value="480" class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">480p</span>
+                  <span class="q-label">SD</span>
+                  <span class="q-default-tag" style="display:none;">★ Default</span>
+                </div>
+              </div>
+
+              <div class="quality-pill" data-quality="360" title="Medium Resolution (640x360)">
+                <input type="radio" name="video_quality" value="360" class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">360p</span>
+                  <span class="q-label">Data Saver</span>
+                  <span class="q-default-tag" style="display:none;">★ Default</span>
+                </div>
+              </div>
+
+              <div class="quality-pill" data-quality="240" title="Low Resolution (426x240)">
+                <input type="radio" name="video_quality" value="240" class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">240p</span>
+                  <span class="q-label">Low</span>
+                  <span class="q-default-tag" style="display:none;">★ Default</span>
+                </div>
+              </div>
+
+              <div class="quality-pill" data-quality="144" title="Minimal Resolution (256x144)">
+                <input type="radio" name="video_quality" value="144" class="hidden-radio">
+                <div class="quality-pill-inner">
+                  <span class="q-res">144p</span>
+                  <span class="q-label">Min</span>
+                  <span class="q-default-tag" style="display:none;">★ Default</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Set as Default Video Quality Confirmation Bar -->
+            <div class="default-quality-bar" id="video-default-quality-bar">
+              <div class="default-bar-left">
+                <span class="star-icon">★</span>
+                <span>Active Default Quality: <strong id="active-default-quality-label">720p HD</strong></span>
+              </div>
+              <button type="button" id="set-default-video-quality-btn" class="slash-btn btn-sm btn-outline-accent" title="Set this resolution as your permanent default">
+                <span class="btn-text">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  <span id="set-default-quality-btn-text">Set as Default Video Quality</span>
+                </span>
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+      </section>
+
+      <!-- RIGHT COLUMN: Telemetry, Circular Progress Ring & Start Action -->
+      <aside class="panel-card telemetry-panel">
+        <div class="panel-bracket top-left"></div>
+        <div class="panel-bracket top-right"></div>
+        <div class="panel-bracket bottom-left"></div>
+        <div class="panel-bracket bottom-right"></div>
+
+        <!-- EXECUTION DECK: Circular Progress Ring & Big Start Download Button -->
+        <div class="execution-box">
+          
+          <!-- Circular Progress Ring (Real SVG with stroke-dashoffset) -->
+          <div class="progress-ring-module" id="circular-progress-wrap">
+            <div class="ring-svg-container">
+              <svg class="progress-ring-svg" width="150" height="150" viewBox="0 0 150 150">
+                <!-- Background Empty Track Circle -->
+                <circle 
+                  class="ring-track" 
+                  cx="75" 
+                  cy="75" 
+                  r="62" 
+                  fill="none" 
+                  stroke="var(--border)" 
+                  stroke-width="11" 
+                />
+                <!-- Progress Filled Circle -->
+                <circle 
+                  id="progress-ring-circle" 
+                  class="ring-progress" 
+                  cx="75" 
+                  cy="75" 
+                  r="62" 
+                  fill="none" 
+                  stroke="var(--accent)" 
+                  stroke-width="11" 
+                  stroke-linecap="square"
+                />
+              </svg>
+              <!-- Center Readout -->
+              <div class="ring-center-readout">
+                <div id="progress-ring-percent" class="ring-number">0%</div>
+                <div id="progress-ring-stage" class="ring-stage">ARMED</div>
+              </div>
+            </div>
+            
+            <div class="ring-info-col">
+              <div class="ring-status-title">PIPELINE TELEMETRY</div>
+              <div id="ring-caption-detail" class="ring-status-desc">Awaiting execution target</div>
+            </div>
+          </div>
+
+          <!-- Big Start Download Button with Slash-Wipe Hover -->
+          <button type="button" id="start-download-btn" class="slash-btn btn-hero">
+            <span class="btn-text">
+              <span class="btn-symbol">&gt;&gt;</span>
+              <span id="btn-text">START DOWNLOAD</span>
+              <span class="btn-symbol">&lt;&lt;</span>
+            </span>
+          </button>
+
+        </div>
+
+        <!-- MONSTER MODE ONLY: Hacking Terminal + Target / Rocket Screen -->
+        <div id="monster-screens-deck" class="monster-screens-deck">
+          
+          <!-- Screen 1: Terminal Screen Panel -->
+          <div class="cyber-screen-panel terminal-screen" id="terminal-screen-card">
+            <div class="screen-titlebar">
+              <div class="screen-dots">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+              </div>
+              <span class="screen-name">TERMINAL // ACCESS_PROTOCOL</span>
+              <span class="screen-status-badge" id="terminal-status-badge">PORT: 443 [STANDBY]</span>
+            </div>
+            <div class="screen-body terminal-body">
+              <div class="crt-scanlines" aria-hidden="true"></div>
+              <div class="terminal-logs" id="terminal-output">
+                <div class="term-line idle-line">&gt; Awaiting target...<span class="term-cursor">_</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 2: Target & Rocket Screen Panel -->
+          <div class="cyber-screen-panel target-screen" id="target-screen-card">
+            <div class="screen-titlebar">
+              <div class="screen-radar-box">
+                <span class="radar-sweep"></span>
+              </div>
+              <span class="screen-name">TARGET // TELEMETRY HUD</span>
+              <span class="screen-status-badge" id="target-coord-text">LOC: UNKNOWN</span>
+            </div>
+            <div class="screen-body target-body">
+              <div class="target-grid-overlay" aria-hidden="true"></div>
+
+              <!-- Entity Target Mode -->
+              <div id="target-entity-view" class="target-entity-view">
+                <div class="reticle-box" aria-hidden="true">
+                  <div class="corner tl"></div>
+                  <div class="corner tr"></div>
+                  <div class="corner bl"></div>
+                  <div class="corner br"></div>
+                  <div class="crosshair-center"></div>
+                </div>
+                <div class="target-label">CURRENT INFILTRATION:</div>
+                <div id="target-entity-name" class="target-name">NO TARGET</div>
+                <div id="target-entity-sub" class="target-sub">SECURE LINK STANDBY</div>
+              </div>
+
+              <!-- Rocket Launch Mode (Active during launch steps) -->
+              <div id="rocket-launch-stage" class="rocket-launch-stage" style="display: none;">
+                <div id="rocket-countdown-overlay" class="countdown-text">T-MINUS 3</div>
+                
+                <div class="rocket-vector-wrap" id="rocket-anim-container">
+                  <svg class="rocket-vector" viewBox="0 0 100 160" width="70" height="110">
+                    <polygon points="15,110 32,85 32,120" fill="var(--accent)" opacity="0.85"/>
+                    <polygon points="85,110 68,85 68,120" fill="var(--accent)" opacity="0.85"/>
+                    <path d="M50,15 C40,40 34,75 34,120 L66,120 C66,75 60,40 50,15 Z" fill="#15131F" stroke="var(--accent)" stroke-width="2.5"/>
+                    <polygon points="50,15 42,42 58,42" fill="var(--accent)"/>
+                    <circle cx="50" cy="60" r="7" fill="var(--accent)" stroke="#fff" stroke-width="1.5"/>
+                    <polygon points="40,120 60,120 64,130 36,130" fill="#2d3748" stroke="var(--accent)" stroke-width="1.5"/>
+                    <g class="rocket-flame-group">
+                      <polygon points="42,130 50,158 58,130" fill="#f59e0b" opacity="0.9"/>
+                      <polygon points="45,130 50,150 55,130" fill="#ef4444" opacity="0.9"/>
+                      <polygon points="47,130 50,144 53,130" fill="#ffffff" opacity="0.95"/>
+                    </g>
+                  </svg>
+                  <div class="smoke-particles" aria-hidden="true">
+                    <span class="smoke-dot d1"></span>
+                    <span class="smoke-dot d2"></span>
+                    <span class="smoke-dot d3"></span>
+                  </div>
+                </div>
+
+                <div class="rocket-telemetry-readout">PROPULSION BURST // 100% THRUST</div>
+              </div>
+
+              <!-- Telemetry & Orbit Journey View (Tower, Rocket, ISS, Saturn) -->
+              <div id="space-journey-view" class="space-journey-view" style="display: none;">
+                <div class="space-starfield" aria-hidden="true">
+                  <span class="star s1"></span>
+                  <span class="star s2"></span>
+                  <span class="star s3"></span>
+                  <span class="star s4"></span>
+                  <span class="star s5"></span>
+                </div>
+
+                <!-- Dynamic Telemetry Rocket Center Art Stages -->
+                <div class="telemetry-art-stage" id="telemetry-art-stage">
+                  <!-- 1. Rocket Stage 1: Pad Ignition & Launch Ascent (0-25%) -->
+                  <div class="telemetry-visual visual-rocket-launch" id="visual-rocket-launch">
+                    <svg viewBox="0 0 100 120" width="64" height="76" class="telemetry-svg rocket-launch-svg">
+                      <line x1="20" y1="105" x2="80" y2="105" stroke="var(--accent)" stroke-width="2"/>
+                      <polygon points="18,105 28,75 34,105" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+                      <polygon points="82,105 72,75 66,105" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+                      <polygon points="22,70 34,50 34,78" fill="var(--accent)"/>
+                      <polygon points="78,70 66,50 66,78" fill="var(--accent)"/>
+                      <path d="M50,8 C42,22 36,44 36,75 L64,75 C64,44 58,22 50,8 Z" fill="#12181f" stroke="var(--accent)" stroke-width="2"/>
+                      <circle cx="50" cy="34" r="5" fill="var(--accent)" stroke="#fff" stroke-width="1.5"/>
+                      <!-- Rocket Main Launch Thrusters -->
+                      <polygon points="40,75 50,108 60,75" fill="#f59e0b" class="thrust-flame-1"/>
+                      <polygon points="44,75 50,96 56,75" fill="#ef4444" class="thrust-flame-2"/>
+                      <polygon points="47,75 50,88 53,75" fill="#ffffff"/>
+                    </svg>
+                  </div>
+
+                  <!-- 2. Rocket Stage 2: Supersonic Max-Q Ascent (25-50%) -->
+                  <div class="telemetry-visual visual-rocket-maxq" id="visual-rocket-maxq" style="display: none;">
+                    <svg viewBox="0 0 100 120" width="64" height="76" class="telemetry-svg rocket-maxq-svg">
+                      <!-- Aerodynamic Mach Shock Cone -->
+                      <path d="M50,5 C30,35 15,65 5,95" fill="none" stroke="rgba(56, 189, 248, 0.7)" stroke-width="1.5" stroke-dasharray="3,3"/>
+                      <path d="M50,5 C70,35 85,65 95,95" fill="none" stroke="rgba(56, 189, 248, 0.7)" stroke-width="1.5" stroke-dasharray="3,3"/>
+                      <polygon points="18,65 32,44 32,72" fill="var(--accent)"/>
+                      <polygon points="82,65 68,44 68,72" fill="var(--accent)"/>
+                      <path d="M50,8 C43,24 35,46 35,72 L65,72 C65,46 57,24 50,8 Z" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+                      <circle cx="50" cy="32" r="5.5" fill="#38bdf8" stroke="#fff" stroke-width="1.5"/>
+                      <!-- High Velocity Twin Boosters -->
+                      <polygon points="36,72 42,102 48,72" fill="#38bdf8"/>
+                      <polygon points="52,72 58,102 64,72" fill="#38bdf8"/>
+                      <polygon points="44,72 50,118 56,72" fill="#f59e0b" class="thrust-flame-1"/>
+                    </svg>
+                  </div>
+
+                  <!-- 3. Rocket Stage 3: Approaching & Accessing ISS Node (50-75%) -->
+                  <div class="telemetry-visual visual-rocket-iss" id="visual-rocket-iss" style="display: none;">
+                    <svg viewBox="0 0 120 100" width="76" height="64" class="telemetry-svg rocket-iss-svg">
+                      <!-- ISS Orbit Target Grid & Alignment Laser -->
+                      <circle cx="88" cy="30" r="16" fill="none" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,2"/>
+                      <circle cx="88" cy="30" r="4" fill="#38bdf8"/>
+                      <line x1="48" y1="52" x2="88" y2="30" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="2,2" class="iss-laser-beam"/>
+                      <!-- Rocket in Docking Approach -->
+                      <g transform="translate(10, 20) rotate(-24 35 45)">
+                        <polygon points="12,55 24,36 24,60" fill="var(--accent)"/>
+                        <polygon points="58,55 46,36 46,60" fill="var(--accent)"/>
+                        <path d="M35,6 C28,20 22,40 22,60 L48,60 C48,40 42,20 35,6 Z" fill="#1e1b4b" stroke="var(--accent)" stroke-width="2"/>
+                        <circle cx="35" cy="28" r="4" fill="#a855f7" stroke="#fff" stroke-width="1.2"/>
+                        <polygon points="28,60 35,82 42,60" fill="#a855f7" class="thrust-flame-2"/>
+                      </g>
+                    </svg>
+                  </div>
+
+                  <!-- 4. Rocket Stage 4: Deep Space Hyper-Relay Orbit (75-100%) -->
+                  <div class="telemetry-visual visual-rocket-deep" id="visual-rocket-deep" style="display: none;">
+                    <svg viewBox="0 0 120 100" width="76" height="64" class="telemetry-svg rocket-deep-svg">
+                      <!-- Warp Relativistic Speed Lines -->
+                      <line x1="10" y1="20" x2="110" y2="20" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="8,6"/>
+                      <line x1="5" y1="50" x2="115" y2="50" stroke="rgba(56,189,248,0.3)" stroke-width="1.5" stroke-dasharray="12,8"/>
+                      <line x1="15" y1="80" x2="105" y2="80" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="8,6"/>
+                      <!-- Rocket in Deep Warp Cruise -->
+                      <g transform="translate(25, 10)">
+                        <polygon points="10,50 25,28 25,54" fill="#38bdf8"/>
+                        <polygon points="60,50 45,28 45,54" fill="#38bdf8"/>
+                        <path d="M35,4 C27,18 20,38 20,54 L50,54 C50,38 43,18 35,4 Z" fill="#020617" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="35" cy="24" r="5" fill="#38bdf8" stroke="#fff" stroke-width="1.5"/>
+                        <!-- Warp Exhaust Tail -->
+                        <polygon points="24,54 35,92 46,54" fill="#38bdf8" class="thrust-flame-1"/>
+                        <polygon points="28,54 35,76 42,54" fill="#ffffff"/>
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="space-telemetry-badge">
+                  <span id="space-status-badge" class="space-badge-pulse">TELEMETRY LINK // UPLINK ESTABLISHED</span>
+                </div>
+                <div id="space-destination-title" class="space-dest-name">STAGE: ROCKET LAUNCH ASCENT</div>
+                <div class="space-planets-strip">
+                  <span class="planet-step active" id="step-rocket-launch">🚀 LAUNCH</span>
+                  <span class="planet-arrow">&rarr;</span>
+                  <span class="planet-step" id="step-rocket-maxq">🚀 MAX-Q</span>
+                  <span class="planet-arrow">&rarr;</span>
+                  <span class="planet-step" id="step-rocket-iss">🚀 ISS ACCESS</span>
+                  <span class="planet-arrow">&rarr;</span>
+                  <span class="planet-step" id="step-rocket-deep">🚀 DEEP ORBIT</span>
+                </div>
+                <div id="space-speed-readout" class="space-speed">PROPULSION: 100% THRUST // T-MINUS ACTIVE</div>
+              </div>
+
+              <!-- Rocket Blast / Mission Failure Screen (Active on failure) -->
+              <div id="rocket-blast-view" class="rocket-blast-view" style="display: none;">
+                <div class="blast-flash-layer"></div>
+                <div class="blast-particles-burst">
+                  <svg viewBox="0 0 100 100" width="80" height="80" class="blast-svg">
+                    <circle cx="50" cy="50" r="38" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6,4" class="blast-ring r1"/>
+                    <circle cx="50" cy="50" r="24" fill="none" stroke="#f97316" stroke-width="3" class="blast-ring r2"/>
+                    <polygon points="50,15 58,40 85,50 58,60 50,85 42,60 15,50 42,40" fill="#ef4444" opacity="0.9" class="blast-spikes"/>
+                    <polygon points="50,28 54,44 70,50 54,56 50,72 46,56 30,50 46,44" fill="#fbbf24" class="blast-core"/>
+                  </svg>
+                </div>
+                <div class="fail-alarm-title">MISSION FAILED RUN RUN RUN...</div>
+                <div class="fail-alarm-sub">ROCKET DETONATED // EVACUATE PIPELINE</div>
+              </div>
+
+              <!-- Mission Successful Screen (Active on successful completion) -->
+              <div id="mission-success-view" class="mission-success-view" style="display: none;">
+                <div class="success-halo-ring">
+                  <svg viewBox="0 0 100 100" width="60" height="60" class="success-check-svg">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#38bdf8" stroke-width="3"/>
+                    <path d="M30 52 L44 65 L70 36" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="success-blue-title">MISSION SUCCESSFUL</div>
+                <div class="success-blue-sub">PACKAGE READY FOR EXTRACTION</div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CALM MODE ONLY: Serene Media Process Monitor Screen -->
+        <div id="calm-screens-deck" class="calm-screens-deck">
+          <div class="calm-screen-panel" id="calm-screen-card">
+            <div class="calm-screen-titlebar">
+              <div class="calm-status-icon">
+                <span class="calm-leaf-icon">🍃</span>
+              </div>
+              <span class="calm-screen-name">TRANQUIL PROCESS MONITOR</span>
+              <span class="calm-status-badge" id="calm-status-badge">STANDBY</span>
+            </div>
+            
+            <div class="calm-screen-body" id="calm-screen-body">
+              <div class="calm-zen-avatar-wrap">
+                <div class="calm-pulse-ring"></div>
+                <div class="calm-pulse-ring r2"></div>
+                <span class="calm-avatar-icon" id="calm-avatar-icon">🕊️</span>
+              </div>
+
+              <div class="calm-process-info">
+                <h3 class="calm-process-title" id="calm-process-title">Ready for Stream Extraction</h3>
+                <p class="calm-process-desc" id="calm-process-desc">Paste your media links and click Start Download to begin.</p>
+              </div>
+
+              <!-- Step-by-Step Peaceful Timeline -->
+              <div class="calm-steps-timeline">
+                <div class="calm-step-item active" id="calm-step-1">
+                  <span class="step-num">1</span>
+                  <span class="step-text">Ready</span>
+                </div>
+                <div class="calm-step-arrow">&rarr;</div>
+                <div class="calm-step-item" id="calm-step-2">
+                  <span class="step-num">2</span>
+                  <span class="step-text">Extracting</span>
+                </div>
+                <div class="calm-step-arrow">&rarr;</div>
+                <div class="calm-step-item" id="calm-step-3">
+                  <span class="step-num">3</span>
+                  <span class="step-text">Downloading</span>
+                </div>
+                <div class="calm-step-arrow">&rarr;</div>
+                <div class="calm-step-item" id="calm-step-4">
+                  <span class="step-num">4</span>
+                  <span class="step-text">Complete</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- STREAM QUEUE SECTION -->
+    <section id="queue-section" class="panel-card queue-section">
+      <div class="panel-bracket top-left"></div>
+      <div class="panel-bracket top-right"></div>
+      <div class="panel-bracket bottom-left"></div>
+      <div class="panel-bracket bottom-right"></div>
+
+      <div class="field-header queue-header-row">
+        <div class="queue-title-wrap">
+          <span class="accent-marker">//</span>
+          <h2 class="queue-title">STREAM QUEUE MATRIX</h2>
+          <span id="queue-total-count" class="badge-chip">0 items</span>
+        </div>
+        <div class="queue-action-btns">
+          <button type="button" id="download-all-btn" class="slash-btn btn-sm btn-action-success" style="display: none;">
+            <span class="btn-text">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              DOWNLOAD ALL READY
+            </span>
+          </button>
+          <button type="button" id="clear-queue-btn" class="slash-btn btn-sm btn-ghost" style="display: none;">
+            <span class="btn-text">CLEAR QUEUE</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Task List Container -->
+      <div id="queue-list" class="queue-list">
+        <div class="empty-queue-box" id="empty-queue-placeholder">
+          <div class="empty-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="18" height="18" rx="0"></rect>
+              <line x1="12" y1="8" x2="12" y2="16"></line>
+              <line x1="8" y1="12" x2="16" y2="12"></line>
+            </svg>
+          </div>
+          <div class="empty-main-text">// QUEUE EMPTY: NO ACTIVE TARGET PIPELINES //</div>
+          <div class="empty-sub-text">Paste YouTube, Instagram, X/Twitter, Facebook, or Snapchat links into the deck above to begin stream capture.</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer"></footer>
+
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <script src="app.js?v=20261003_11"></script>
+</body>
+</html>

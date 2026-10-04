@@ -1,0 +1,18 @@
+{
+  "name": "media-downloader-frontend",
+  "version": "1.0.0",
+  "description": "Frontend client for Hangar Four4Three Universal Media Downloader",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "dev": "node scripts/serve.js",
+    "serve": "node scripts/serve.js"
+  },
+  "keywords": [
+    "frontend",
+    "ui",
+    "downloader-client"
+  ],
+  "author": "Antigravity",
+  "license": "ISC"
+}
