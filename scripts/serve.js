@@ -5,11 +5,12 @@
  */
 
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
 const PORT = parseInt(process.env.FRONTEND_PORT || process.env.PORT || '5173', 10);
-const BACKEND_PORT = parseInt(process.env.BACKEND_PORT || '3000', 10);
+const BACKEND_URL = process.env.BACKEND_URL || process.env.API_BASE_URL || (process.env.BACKEND_PORT ? `http://localhost:${process.env.BACKEND_PORT}` : 'https://backend-radar-production.up.railway.app');
 const PUBLIC_DIR = path.resolve(__dirname, '..', 'public');
 
 const MIME_TYPES = {
@@ -28,24 +29,31 @@ const MIME_TYPES = {
 };
 
 function proxyRequestToBackend(req, res) {
+  const targetUrl = new URL(req.url, BACKEND_URL);
+  const isHttps = targetUrl.protocol === 'https:';
+  const client = isHttps ? https : http;
+
+  const headers = { ...req.headers, host: targetUrl.host };
+
   const options = {
-    hostname: 'localhost',
-    port: BACKEND_PORT,
-    path: req.url,
+    protocol: targetUrl.protocol,
+    hostname: targetUrl.hostname,
+    port: targetUrl.port || (isHttps ? 443 : 80),
+    path: targetUrl.pathname + targetUrl.search,
     method: req.method,
-    headers: req.headers
+    headers: headers
   };
 
-  const proxyReq = http.request(options, (proxyRes) => {
+  const proxyReq = client.request(options, (proxyRes) => {
     res.writeHead(proxyRes.statusCode, proxyRes.headers);
     proxyRes.pipe(res);
   });
 
   proxyReq.on('error', (err) => {
-    console.error(`[Frontend Proxy Error]: Backend unreachable at http://localhost:${BACKEND_PORT}`, err.message);
+    console.error(`[Frontend Proxy Error]: Backend unreachable at ${BACKEND_URL}`, err.message);
     res.writeHead(502, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
-      error: `Backend service is not running on port ${BACKEND_PORT}. Please run "npm run dev:backend" or "npm start".`,
+      error: `Backend service is unreachable at ${BACKEND_URL}.`,
       code: 'BACKEND_UNAVAILABLE'
     }));
   });
@@ -107,7 +115,7 @@ server.listen(PORT, () => {
   console.log('====================================================');
   console.log(`🌐 Frontend Development Server running independently`);
   console.log(`📡 Local URL:   http://localhost:${PORT}`);
-  console.log(`🔗 Backend API: Proxying /api/* -> http://localhost:${BACKEND_PORT}`);
+  console.log(`🔗 Backend API: Proxying /api/* -> ${BACKEND_URL}`);
   console.log('====================================================');
 });
 

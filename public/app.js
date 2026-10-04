@@ -8,6 +8,19 @@
  * GET /api/system-status, GET /api/download/:id) remain completely unchanged.
  */
 
+// Backend API Configuration
+const DEFAULT_API_BASE_URL = 'https://backend-radar-production.up.railway.app';
+const API_BASE_URL = (typeof window !== 'undefined' && (window.__API_BASE_URL__ || window.localStorage.getItem('ymd_api_base_url')))
+  || DEFAULT_API_BASE_URL;
+
+function getApiUrl(path) {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  const base = (API_BASE_URL || '').replace(/\/+$/, '');
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return base ? `${base}${cleanPath}` : cleanPath;
+}
+
 // Storage Keys
 const STORAGE_KEY_DEFAULT_VIDEO_QUALITY = 'ymd_default_video_quality';
 const STORAGE_KEY_UI_MODE = 'ymd_ui_mode'; // 'calm' | 'monster'
@@ -1622,7 +1635,7 @@ function loadDefaultPreferences() {
 
 async function checkSystemStatus() {
   try {
-    const res = await fetch('/api/system-status');
+    const res = await fetch(getApiUrl('/api/system-status'));
     if (!res.ok) return;
     const data = await res.json();
     const statusDot = document.querySelector('.status-dot');
@@ -1775,7 +1788,7 @@ async function handleStartDownload() {
   }
 
   try {
-    const res = await fetch('/api/jobs', {
+    const res = await fetch(getApiUrl('/api/jobs'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1846,7 +1859,7 @@ function startPolling() {
 
     const jobIds = Array.from(state.activeJobs.keys()).join(',');
     try {
-      const res = await fetch(`/api/jobs?ids=${jobIds}`);
+      const res = await fetch(getApiUrl(`/api/jobs?ids=${jobIds}`));
       if (res.ok) {
         const data = await res.json();
         let hasPending = false;
@@ -2127,15 +2140,16 @@ function updateTaskCard(card, job) {
   let bottomEl = card.querySelector('.task-bottom');
   if (job.status === 'completed' && job.downloadUrl) {
     const downloadLabel = isMp4 ? `Save MP4 (${getShortQualityLabel(job.quality)})` : 'Save MP3';
+    const downloadHref = getApiUrl(job.downloadUrl);
     if (!bottomEl) {
       bottomEl = document.createElement('div');
       bottomEl.className = 'task-bottom';
       card.appendChild(bottomEl);
     }
     const existingAnchor = bottomEl.querySelector('a');
-    if (!existingAnchor || existingAnchor.href !== job.downloadUrl) {
+    if (!existingAnchor || existingAnchor.getAttribute('href') !== downloadHref) {
       bottomEl.innerHTML = `
-        <a href="${job.downloadUrl}" download="${escapeHtml(job.filename)}" class="btn-success" title="Download to your device">
+        <a href="${downloadHref}" download="${escapeHtml(job.filename)}" class="btn-success" title="Download to your device">
           <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           ${escapeHtml(downloadLabel)}
         </a>
@@ -2240,10 +2254,11 @@ function createTaskCard(job) {
   // Download Link Button
   if (job.status === 'completed' && job.downloadUrl) {
     const downloadLabel = isMp4 ? `Save MP4 (${getShortQualityLabel(job.quality)})` : 'Save MP3';
+    const downloadHref = getApiUrl(job.downloadUrl);
     const bottomEl = document.createElement('div');
     bottomEl.className = 'task-bottom';
     bottomEl.innerHTML = `
-      <a href="${job.downloadUrl}" download="${escapeHtml(job.filename)}" class="btn-success" title="Download to your device">
+      <a href="${downloadHref}" download="${escapeHtml(job.filename)}" class="btn-success" title="Download to your device">
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         ${escapeHtml(downloadLabel)}
       </a>
@@ -2261,7 +2276,7 @@ function handleDownloadAllReady() {
   completedJobs.forEach((job, index) => {
     setTimeout(() => {
       const link = document.createElement('a');
-      link.href = job.downloadUrl;
+      link.href = getApiUrl(job.downloadUrl);
       link.download = job.filename || 'media';
       document.body.appendChild(link);
       link.click();
@@ -2280,7 +2295,7 @@ function handleClearQueue() {
 
   // Inform backend to immediately purge physical temp files on disk
   try {
-    fetch('/api/jobs/clear', {
+    fetch(getApiUrl('/api/jobs/clear'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ jobIds })
@@ -2500,10 +2515,10 @@ function cleanupSessionOnLeave() {
 
   if (navigator.sendBeacon) {
     const blob = new Blob([payload], { type: 'application/json' });
-    navigator.sendBeacon('/api/session/leave', blob);
+    navigator.sendBeacon(getApiUrl('/api/session/leave'), blob);
   } else {
     try {
-      fetch('/api/session/leave', {
+      fetch(getApiUrl('/api/session/leave'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: payload,
